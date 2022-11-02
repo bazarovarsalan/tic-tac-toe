@@ -1,0 +1,136 @@
+body {
+  background-color: aliceblue;
+  margin: 0;
+}
+.board {
+  width: 100vw;
+  height: 75vh;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  grid-template-columns: repeat(3, auto);
+  font-family: sans-serif;
+  text-align: center;
+}
+.cell {
+  width: 160px;
+  height: 160px;
+  border: 2px solid black;
+  background-color: white;
+  font-size: 140px;
+  cursor: pointer;
+}
+
+.cell:hover {
+  background-color: silver;
+}
+
+.cell.highlight {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
+
+.cell:nth-child(-1n + 3) {
+  border-top: none;
+}
+.cell:nth-child(3n + 1) {
+  border-left: none;
+}
+.cell:nth-child(3n + 3) {
+  border-right: none;
+}
+
+.cell:nth-child(1n + 7) {
+  border-bottom: none;
+}
+
+h1 {
+  text-align: center;
+  font-size: 50px;
+}
+
+.winningMessage {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0%;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 5rem;
+  flex-direction: column;
+}
+
+.winningMessage.show {
+  display: flex;
+}
+
+#restartButton {
+  font-size: 2rem;
+  justify-content: center;
+  text-align: center;
+  background-color: white;
+  border: 3px solid;
+  padding: 0.3rem 0.5rem;
+}
+
+#restartButton:hover {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
+
+.quontityOfPlayers {
+  display: none;
+  flex-direction: row;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 5rem;
+}
+
+.quontityOfPlayers.show {
+  display: flex;
+}
+
+#playWithComputer {
+  display: inline-block;
+  font-size: 2rem;
+  text-align: center;
+  background-color: white;
+  border: 3px solid;
+  padding: 0.3rem 0.5rem;
+}
+
+#playWithFriend {
+  display: inline-block;
+  font-size: 2rem;
+  text-align: center;
+  background-color: white;
+  border: 3px solid;
+  padding: 0.3rem 0.5rem;
+}
+
+#playWithComputer:hover {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
+
+#playWithFriend:hover {
+  background-color: black;
+  color: white;
+  border-color: white;
+}
