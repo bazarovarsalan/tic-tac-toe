@@ -4,16 +4,17 @@ cell = Array.from(cell);
 const restartButton = document.querySelector("#restartButton");
 const winningMessage = document.querySelector(".winningMessage");
 const winningTextMessage = document.querySelector("#winningTextMessage");
-const quountityOfPlayers =
-  document.getElementsByClassName("quountityOfPlayers");
-const quontityOfPlayers = document.querySelector(".quontityOfPlayers");
+const quauntityOfPlayers =
+  document.getElementsByClassName("quauntityOfPlayers");
+const quantityOfPlayers = document.querySelector(".quantityOfPlayers");
 const buttonPlayWithComputer = document.querySelector("#playWithComputer");
 const buttonPlayWithFriend = document.querySelector("#playWithFriend");
-
 const playerX = "X";
 const playerCircle = "O";
 let player = playerX;
-const winLine = [
+let circleTurn = false;
+let statusOfTurn = document.querySelector("#statusOfTurn");
+const allWinningCombinations = [
   [1, 2, 3],
   [4, 5, 6],
   [7, 8, 9],
@@ -23,16 +24,21 @@ const winLine = [
   [1, 5, 9],
   [3, 5, 7],
 ];
-let winningArray = [];
-let computerIsPlaying = false;
+let winnigCells = [];
+let filledCellsOfX = [];
+let filledCellsOfCircle = [];
+let xArrayForNextTurnOfComp = [];
+let circeArrayForNextTurnOfComp = [];
+let computerIsPlayingCheck = false;
+let computerNextTurn = false;
 
 startGame();
+quantityOfPlayers.classList.add("show");
 
-restartButton.addEventListener("click", restartGame);
 buttonPlayWithFriend.addEventListener("click", startGameWithFriend);
 buttonPlayWithComputer.addEventListener("click", startGameWithComputer);
 
-quontityOfPlayers.classList.toggle("show");
+restartButton.addEventListener("click", restartGame);
 
 function startGame() {
   for (let i = 0; i < cell.length; i++) {
@@ -42,73 +48,59 @@ function startGame() {
 
 function cellClick() {
   if (this.innerHTML === "") {
-    this.innerHTML = player;
+    turnOfPlayer(this);
   } else {
     return;
   }
-  if (!checkGameOver()) {
-    player = player === playerX ? playerCircle : playerX;
-    if (computerIsPlaying) {
-      computerTurn();
-    }
-  }
+  checkResult();
 }
 
-function checkGameOver() {
-  let arrayOfFilledCells = [];
-  for (let i in cell) {
-    if (cell[i].innerHTML === player) {
-      arrayOfFilledCells.push(parseInt(cell[i].getAttribute("data-pos")));
-    }
-  }
-  console.log(arrayOfFilledCells);
-  if (checkWin(arrayOfFilledCells)) {
-    let winningPlayer = player;
-    window.setTimeout(() => {
-      winningMessage.classList.toggle("show");
-      winningTextMessage.innerText = `${winningPlayer} Wins!`;
-      highlight(winningArray);
-    }, 100);
-    return true;
-  } else if (checkDraw()) {
-    window.setTimeout((x) => {
-      showDraw();
-    }, 100);
-    return true;
+function turnOfPlayer(elem) {
+  if (!circleTurn) {
+    elem.innerHTML = playerX;
+    filledCellsOfX.push(parseInt(elem.getAttribute("data-pos")));
   } else {
-    return false;
+    elem.innerHTML = playerCircle;
+    filledCellsOfCircle.push(parseInt(elem.getAttribute("data-pos")));
+  }
+  circleTurn = !circleTurn;
+  if (computerIsPlayingCheck) {
+    computerNextTurn = !computerNextTurn;
+    computerTurn();
+    checkResult();
+  }
+  statusOfTurn.textContent = !circleTurn ? "X's turn" : "O's turn";
+}
+
+function checkResult() {
+  console.log("asd");
+  if (checkWin(filledCellsOfX)) {
+    printFinalResult(false, "X");
+  } else if (checkWin(filledCellsOfCircle)) {
+    printFinalResult(false, "O");
+  } else if (checkDraw()) {
+    printFinalResult(checkDraw(), undefined);
   }
 }
 
-function checkWin(arr) {
-  for (let i = 0; i < winLine.length; i++) {
-    let current = winLine[i];
+function checkWin(array) {
+  for (let i = 0; i < allWinningCombinations.length; i++) {
+    let winCombination = allWinningCombinations[i];
     let check = true;
-
-    for (let j in current) {
-      if (arr.indexOf(current[j]) === -1) {
+    let count = 0;
+    for (let j = 0; j < winCombination.length; j++) {
+      if (array.indexOf(winCombination[j]) === -1) {
         check = false;
+      } else {
+        count += 1;
       }
     }
     if (check) {
-      winningArray = [...current];
+      winnigCells = [...winCombination];
       return true;
     }
   }
   return false;
-}
-
-function restartGame() {
-  for (let i = 0; i < cell.length; i++) {
-    cell[i].innerHTML = "";
-    cell[i].classList.remove("highlight");
-  }
-  winningMessage.classList.remove("show");
-
-  arrayOfFilledCells = [];
-  winningArray = [];
-  quontityOfPlayers.classList.add("show");
-  player = playerX;
 }
 
 function checkDraw() {
@@ -120,59 +112,74 @@ function checkDraw() {
   return true;
 }
 
-function showDraw() {
-  winningTextMessage.innerText = `Draw!`;
-  winningMessage.classList.add("show");
-  restartButton.classList.remove("show");
+function printFinalResult(isDraw, string) {
+  if (isDraw) {
+    winningMessage.classList.add("show");
+    winningTextMessage.innerText = `Draw!`;
+  } else if (!isDraw) {
+    winningMessage.classList.add("show");
+    winningTextMessage.innerText = `${string}'s win!`;
+    highlight(winnigCells);
+  }
+  statusOfTurn.innerHTML = "";
 }
 
 let highlight = function (arr) {
   for (let i = 0; i < arr.length; i++) {
     let el = document.querySelector(`.cell[data-pos="${arr[i]}"]`);
-    console.log(arr, el);
     el.classList.add("highlight");
-
-    //if (arr.indexOf(parseInt(cell[i].getAttribute("pos"))) !== -1) {
-    // cell[i].classList.toggle("highlight");
   }
 };
 
 function startGameWithFriend() {
-  startGame();
-  quontityOfPlayers.classList.remove("show");
-  computerIsPlaying = false;
+  quantityOfPlayers.classList.remove("show");
+  statusOfTurn.textContent = !circleTurn ? "X's turn" : "O's turn";
 }
 
 function startGameWithComputer() {
-  startGame();
-  quontityOfPlayers.classList.toggle("show");
-  computerIsPlaying = true;
+  quantityOfPlayers.classList.remove("show");
+  statusOfTurn.textContent = !circleTurn ? "X's turn" : "O's turn";
+  computerIsPlayingCheck = true;
+  computerTurn();
 }
 
 function computerTurn() {
-  let emptyCells = [];
-  for (let i = 0; i < cell.length; i++) {
-    if (cell[i].innerHTML === "") {
-      emptyCells.push(cell[i]);
+  if (!computerNextTurn) {
+    return;
+  } else {
+    let emptyCells = [];
+    for (let i = 0; i < cell.length; i++) {
+      if (cell[i].innerHTML === "") {
+        emptyCells.push(cell[i]);
+      }
+    }
+    if (emptyCells.length === 0) {
+      return;
+    }
+    let randomCell = Math.floor(Math.random() * emptyCells.length);
+    let cellCenter = document.querySelector(`.cell[data-pos="5"]`);
+
+    if (cellCenter && cellCenter.innerHTML === "") {
+      turnOfPlayer(cellCenter); // first turn of computer always to set center cell
+      return;
+    } else {
+      turnOfPlayer(emptyCells[randomCell]);
+      return;
     }
   }
-  let randomCell = Math.floor(Math.random() * emptyCells.length);
-  let computerPlayer = player;
-
-  emptyCells[randomCell].innerHTML = computerPlayer;
-  checkGameOver();
-  player = player === playerX ? playerCircle : playerX;
 }
-/*
 
-
-
-
-
-
--make a smart logic of play Computer;
-
-
-
-
-*/
+function restartGame() {
+  for (let i = 0; i < cell.length; i++) {
+    if (cell[i].innerHTML !== "") {
+      cell[i].innerHTML = "";
+      cell[i].classList.remove("highlight");
+      winnigCells = [];
+      filledCellsOfX = [];
+      filledCellsOfCircle = [];
+    }
+  }
+  quantityOfPlayers.classList.add("show");
+  winningMessage.classList.remove("show");
+  computerIsPlayingCheck = false;
+}
